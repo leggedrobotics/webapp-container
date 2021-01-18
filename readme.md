@@ -1,7 +1,7 @@
 `webapp-docker` 🐋
 ===
 
-Infrastructure to run a PHP web-application, typically Laravel, in Docker.
+Scripts and tools to run a PHP web-application - meaning [Laravel](https://laravel.com/), right now - in Docker.
 
 **Note: This repository is supposed to be a Git submodule of a web application.**
 
@@ -57,4 +57,19 @@ make npm-run-watch
 make sh
 # start a Tinker (PHP REPL) session in the development container
 make tinker
+```
+
+📦 Production
+---
+
+Getting ready for production by building a container that includes sources and compiled assets.
+
+```bash
+# build production container
+make build-production
+# optionally, tag and push the container
+#  docker tag my-app-production my.registry.io/my-app
+#  docker push my.registry.io/my-app
+# test the production container locally
+make production
 ```
