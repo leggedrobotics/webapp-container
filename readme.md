@@ -3,6 +3,15 @@
 
 Infrastructure to run a PHP web-application, typically Laravel, in Docker.
 
+**Note: This repository is supposed to be a Git submodule of a web application.**
+
+Ingredients
+- [⛰️  Alpine](https://www.alpinelinux.org/)
+- [⚙️  PHP-FPM 7.4](https://php-fpm.org/)
+- [🌐 Nginx](https://nginx.org/en/)
+- [📮 Redis](https://redis.io/)
+- [👮 supervisord](http://supervisord.org/)
+
 💾 Setup
 ---
 
