@@ -1,8 +1,10 @@
+# Example .dockerignore file
 .git
 .idea
 .github
 docs
-docker/certs
+
+# Adjust the directory name
 app/vendor
 app/node_modules
 app/storage/app/public
