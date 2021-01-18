@@ -14,7 +14,11 @@ check:
 	@which ${DOCKER} >/dev/null || ( echo "Error: Docker is not installed"; exit 1 )
 
 build-development: check 
-	${BUILD} -f docker/Dockerfile --target development --build-arg UID=${UID} --build-arg GID=${GID} -t ${APP_NAME}-development .
+	${BUILD} -f docker/Dockerfile \
+	  --target development \
+	  --build-arg UID=${UID} \
+	  --build-arg GID=${GID} \
+	  -t ${APP_NAME}-development .
 
 composer-install: check build-development
 	${DOCKER} run -ti --rm --name ${APP_NAME}-composer-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-development composer install

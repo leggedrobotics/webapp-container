@@ -1,8 +1,8 @@
 # Copy Makefile.example to the repository containing the `webapp-docker` submodule
 
 # Adjust the parameters
-APP_DIR =? my-app
-APP_NAME =? my-app
+APP_DIR ?= my-app
+APP_NAME ?= my-app
 
 # Include `makefile.mk` in the submodule folder, assuming `docker`
 include docker/makefile.mk
