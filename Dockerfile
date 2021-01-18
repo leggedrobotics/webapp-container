@@ -18,6 +18,10 @@ RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add \
   php-xmlwriter \
   php-session \
   php-pdo \
+  php-mysqli \
+  php-pdo_mysql \
+  php-pgsql \
+  php-pdo_pgsql \
   php-sqlite3 \
   php-pdo_sqlite \
   nginx \
