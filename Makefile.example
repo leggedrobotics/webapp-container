@@ -1,0 +1,5 @@
+APP_DIR = my-app
+APP_NAME = my-app
+
+include docker/makefile.mk
+
