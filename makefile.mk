@@ -18,7 +18,9 @@ build-development: check
 	  --target development \
 	  --build-arg UID=${UID} \
 	  --build-arg GID=${GID} \
-	  -t ${APP_NAME}-development .
+	  -t ${APP_NAME}-development \
+	  -t ${APP_NAME}-development-base \
+	  .
 
 composer-install: check build-development
 	${DOCKER} run -ti --rm --name ${APP_NAME}-composer-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-development composer install
@@ -27,7 +29,9 @@ build-npm: check
 	${BUILD} -f docker/npm/Dockerfile \
 		--build-arg UID=${UID} \
 		--build-arg APP_DIR=${APP_DIR} \
-		-t ${APP_NAME}-npm docker/npm
+		-t ${APP_NAME}-npm-base \
+		-t ${APP_NAME}-npm \
+		docker/npm
 
 npm-install: check build-npm
 	${DOCKER} run -ti --rm --name ${APP_NAME}-npm-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-npm install
@@ -56,7 +60,9 @@ build-production: check
 	${BUILD} -f docker/Dockerfile \
 		--target production \
 		--build-arg APP_DIR=${APP_DIR} \
-		-t ${APP_NAME}-production .
+		-t ${APP_NAME}-production \
+		-t ${APP_NAME}-production-base \
+		.
 
 production: check build-production
 	${DOCKER} run -ti --rm --name ${APP_NAME}-production -p80:80 -p443:443 -v${PWD}/docker/certs:/certs -v${APP_NAME}-production-storage:/opt/storage ${APP_NAME}-production
