@@ -67,8 +67,9 @@ Add features to the images or change behavior by adding Make targets or extendin
 Via a Dockerfile in the root of the project.
 
 ```dockerfile
+# syntax = docker/dockerfile:1.0-experimental
 ARG BASE_IMG=my-app-development-base
-FROM $BASE_IMG AS development
+FROM $BASE_IMG AS base
 
 # Extend the development base image with some extra packages
 RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add \

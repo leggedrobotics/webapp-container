@@ -46,7 +46,8 @@ WORKDIR /opt
 
 COPY docker/entrypoint.sh /
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+ARG NGINX_CONF=standalone.conf
+COPY docker/nginx/${NGINX_CONF} /etc/nginx/conf.d/default.conf
 COPY docker/php/php-fpm.d/ /etc/php7/php-fpm.d/
 COPY docker/supervisord/ /etc/
 ENTRYPOINT ["/entrypoint.sh"]
@@ -78,20 +79,3 @@ RUN echo "xdebug.mode=debug,develop" >> /etc/php7/conf.d/90_xdebug.ini \
  && echo "xdebug.idekey=CODE_ACCESS" >> /etc/php7/conf.d/90_xdebug.ini \
  && echo "xdebug.discover_client_host=true" >> /etc/php7/conf.d/90_xdebug.ini
 
-FROM node:14-alpine AS assets
-ARG APP_DIR=app
-WORKDIR /assets
-COPY ${APP_DIR}/package* ./
-RUN --mount=type=cache,target=/root/.npm npm install
-COPY ${APP_DIR}/ ./
-RUN npm run prod
-
-FROM base AS production
-ARG APP_DIR=app
-COPY --chown=app:app ${APP_DIR}/composer.* ./
-RUN --mount=type=cache,target=/home/app/.composer su-exec app composer install -q --no-scripts --no-autoloader --no-dev
-COPY --chown=app:app ${APP_DIR} ./
-COPY --from=assets --chown=app:app /assets/public ./
-RUN chmod o+rwx -R storage && touch storage/database.sqlite
-RUN --mount=type=cache,target=/home/app/.composer su-exec app composer dump-autoload -q --optimize --no-dev
-RUN php artisan optimize && php artisan migrate --force

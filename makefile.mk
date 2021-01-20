@@ -4,6 +4,8 @@ APP_DIR ?= app
 APP_NAME ?= app
 APP_DOMAIN ?= ${APP_NAME}.test
 
+NGINX_CONF ?= standalone.conf
+
 PWD=$(shell pwd)
 DOCKER ?= docker
 BUILD ?= ${DOCKER} buildx build
@@ -18,6 +20,7 @@ build-base: check
 	  --target base \
 	  --build-arg UID=${UID} \
 	  --build-arg GID=${GID} \
+	  --build-arg NGINX_CONF=${NGINX_CONF} \
 	  -t ${APP_NAME}-base \
 	  .
 
@@ -26,6 +29,7 @@ build-development-base: check
 	  --target development \
 	  --build-arg UID=${UID} \
 	  --build-arg GID=${GID} \
+	  --build-arg NGINX_CONF=${NGINX_CONF} \
 	  -t ${APP_NAME}-development \
 	  -t ${APP_NAME}-development-base \
 	  .
