@@ -3,6 +3,8 @@
 .idea
 .github
 docs
+Dockerfile
+.dockerignore
 
 # Adjust the directory name
 app/vendor

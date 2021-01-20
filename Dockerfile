@@ -2,7 +2,7 @@
 FROM alpine:edge AS base
 
 RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add ca-certificates \
-  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories 
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
 RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add \
   php \
@@ -18,10 +18,6 @@ RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add \
   php-xmlwriter \
   php-session \
   php-pdo \
-  php-mysqli \
-  php-pdo_mysql \
-  php-pgsql \
-  php-pdo_pgsql \
   php-sqlite3 \
   php-pdo_sqlite \
   nginx \
@@ -85,18 +81,17 @@ RUN echo "xdebug.mode=debug,develop" >> /etc/php7/conf.d/90_xdebug.ini \
 FROM node:14-alpine AS assets
 ARG APP_DIR=app
 WORKDIR /assets
-COPY ${APP_DIR}/package* ${APP_DIR}/webpack.mix.js ./
-COPY ${APP_DIR}/resources ./resources
-RUN --mount=type=cache,target=/root/.npm npm install \
-  && npm run prod
+COPY ${APP_DIR}/package* ./
+RUN --mount=type=cache,target=/root/.npm npm install
+COPY ${APP_DIR}/ ./
+RUN npm run prod
 
 FROM base AS production
 ARG APP_DIR=app
 COPY --chown=app:app ${APP_DIR}/composer.* ./
 RUN --mount=type=cache,target=/home/app/.composer su-exec app composer install -q --no-scripts --no-autoloader --no-dev
 COPY --chown=app:app ${APP_DIR} ./
-COPY --from=assets --chown=app:app /assets/public/ ./public/
-COPY --from=assets --chown=app:app /assets/mix-manifest.json ./
+COPY --from=assets --chown=app:app /assets/public ./
 RUN chmod o+rwx -R storage && touch storage/database.sqlite
 RUN --mount=type=cache,target=/home/app/.composer su-exec app composer dump-autoload -q --optimize --no-dev
 RUN php artisan optimize && php artisan migrate --force

@@ -5,15 +5,23 @@ APP_NAME ?= app
 APP_DOMAIN ?= ${APP_NAME}.test
 
 PWD=$(shell pwd)
-DOCKER=docker
-BUILD=docker buildx build
+DOCKER ?= docker
+BUILD ?= ${DOCKER} buildx build
 UID=$(shell id -u)
 GID=$(shell id -g)
 
 check:
 	@which ${DOCKER} >/dev/null || ( echo "Error: Docker is not installed"; exit 1 )
 
-build-development: check 
+build-base: check
+	${BUILD} -f docker/Dockerfile \
+	  --target base \
+	  --build-arg UID=${UID} \
+	  --build-arg GID=${GID} \
+	  -t ${APP_NAME}-base \
+	  .
+
+build-development-base: check
 	${BUILD} -f docker/Dockerfile \
 	  --target development \
 	  --build-arg UID=${UID} \
@@ -22,8 +30,7 @@ build-development: check
 	  -t ${APP_NAME}-development-base \
 	  .
 
-composer-install: check build-development
-	${DOCKER} run -ti --rm --name ${APP_NAME}-composer-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-development composer install
+build-development: build-development-base
 
 build-npm: check
 	${BUILD} -f docker/npm/Dockerfile \
@@ -32,6 +39,9 @@ build-npm: check
 		-t ${APP_NAME}-npm-base \
 		-t ${APP_NAME}-npm \
 		docker/npm
+
+composer-install: check build-development
+	${DOCKER} run -ti --rm --name ${APP_NAME}-composer-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-development composer install
 
 npm-install: check build-npm
 	${DOCKER} run -ti --rm --name ${APP_NAME}-npm-install -v${PWD}/${APP_DIR}:/opt ${APP_NAME}-npm install
@@ -55,17 +65,6 @@ sh: check
 
 tinker: check
 	${DOCKER} exec -ti -uapp ${APP_NAME}-development php artisan tinker
-
-build-production: check
-	${BUILD} -f docker/Dockerfile \
-		--target production \
-		--build-arg APP_DIR=${APP_DIR} \
-		-t ${APP_NAME}-production \
-		-t ${APP_NAME}-production-base \
-		.
-
-production: check build-production
-	${DOCKER} run -ti --rm --name ${APP_NAME}-production -p80:80 -p443:443 -v${PWD}/docker/certs:/certs -v${APP_NAME}-production-storage:/opt/storage ${APP_NAME}-production
 
 docker/certs/fullchain.pem: docker/certs/generate.sh
 	cd docker/certs && ./generate.sh ${APP_DOMAIN}
