@@ -26,7 +26,8 @@ RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add \
   su-exec \
   composer \
   sudo \
-  shadow
+  shadow \
+  py3-setuptools
 
 RUN echo "app ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/app
 RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf
