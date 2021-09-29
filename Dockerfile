@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.0-experimental
-FROM alpine:edge AS base
+FROM alpine:3.13 AS base
 
 RUN --mount=type=cache,target=/etc/apk/cache apk --update-cache add ca-certificates \
   && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
